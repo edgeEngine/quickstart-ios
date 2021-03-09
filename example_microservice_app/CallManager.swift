@@ -1,5 +1,5 @@
 //
-//  MMKGetManager.swift
+//  CallManager.swift
 //  example_microservice_app
 //
 //  Created by Raduz Benicky on 2018-05-18.
@@ -20,38 +20,41 @@ enum NodeListType {
 /**
  Class for getting different edgeSDK node lists and performing further calls on their endpoints.
  */
-final public class MMKGetManager: NSObject {
+final public class CallManager: NSObject {
     
     /**
      Produces a list of edgeSDK nodes from either the same network as the current node (network) or edgeSDK nodes located nearby (from all networks) as determined by their proximity to the current node with a completion block.
      
      - Parameter type: A type of a edgeSDK nodes list requested. edgeSDK nodes from either the same network as the current node (network) or edgeSDK nodes located nearby (from all networks) as determined by their proximity to the current node.
-     - Parameter completion: Completion block returning a list of nodes [MMKEdgeNode] or Error.
+     - Parameter completion: Completion block returning a list of nodes [EdgeEngineNode] or Error.
      */
-    class func getNodes( type: NodeListType, completion: @escaping (([MMKEdgeNode]?, error: Error?)) -> Void) {
+    class func getNodes( type: NodeListType, completion: @escaping (([EdgeEngineNode]?, error: Error?)) -> Void) {
         
-        guard let accessToken = MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) else {
+        guard let checkedEdgeAccessToken = MMKLibraryAdapter.currentEdgeAccessToken(), let checkedEdgeServiceLink = MMKLibraryAdapter.edgeServiceLink() else {
             completion((nil, NSError.init(domain: "Authorization Failed", code: 500, userInfo: nil)))
             return
         }
-        
+                
         var link: String!
         switch type {
         case .network:
-            link = MMKConfigurationManager.exampleMicroServiceNetworkNodesLink()
+            let microserviceBaseApiPath = MMKLibraryAdapter.microserviceDeployedBaseApiPath(type: .example, endpoint: .drives_network)
+            link = checkedEdgeServiceLink + "/" + microserviceBaseApiPath
         case .nearby:
-            link = MMKConfigurationManager.exampleMicroServiceNearbyNodesLink()
+            let microserviceBaseApiPath = MMKLibraryAdapter.microserviceDeployedBaseApiPath(type: .example, endpoint: .drives_nearby)
+            link = checkedEdgeServiceLink + "/" + microserviceBaseApiPath
         }
         
-        let headers = ["Authorization" : "Bearer \(accessToken)" ]
+        let headers = ["Authorization" : "Bearer \(checkedEdgeAccessToken)" ]
+        let httpHeaders = HTTPHeaders.init(headers)
         
-        Alamofire.request(link, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers).responseJSON { response in
+        AF.request(link, method: .get, parameters: nil, encoding: URLEncoding.default, headers: httpHeaders).responseJSON { response in
             switch response.result {
             case .success(let data):
                 
                 let json = JSON.init(data)
                 guard json != JSON.null else {
-                    completion((nil, NSError.init(domain: "Unable to process the response", code: 500, userInfo: nil)))
+                    completion((nil, NSError.init(domain: "Unable to Proceed", code: 500, userInfo: nil)))
                     return
                 }
                 
@@ -77,17 +80,19 @@ final public class MMKGetManager: NSObject {
      - Parameter node: edgeSDK node to call the hello endpoint on.
      - Parameter completion: Completion block returning a hello response JSON or Error.
      */
-    class func getHelloResponse( node: MMKEdgeNode, completion: @escaping ((json: JSON?, error: Error?)) -> Void) {
+    class func getHelloResponse( node: EdgeEngineNode, completion: @escaping ((json: JSON?, error: Error?)) -> Void) {
     
-        let link = node.urlString! + MMKConfigurationManager.exampleMicroServiceHelloEndpoint()
+        let microserviceBaseApiPath = MMKLibraryAdapter.microserviceDeployedBaseApiPath(type: .example, endpoint: .hello)
         
-        Alamofire.request(link).responseJSON { response in
+        let link = node.urlString! + "/" + microserviceBaseApiPath
+        
+        AF.request(link).responseJSON { response in
             switch response.result {
             case .success(let data):
                 
                 let json = JSON.init(data)
                 guard json != JSON.null else {
-                    completion((nil, NSError.init(domain: "Unable to process the response", code: 500, userInfo: nil)))
+                    completion((nil, NSError.init(domain: "Unable to Proceed", code: 500, userInfo: nil)))
                     return
                 }
                 
@@ -100,20 +105,20 @@ final public class MMKGetManager: NSObject {
     }
 }
 
-fileprivate extension MMKGetManager {
+fileprivate extension CallManager {
     
     /**
      A private parser.
      
-     - Parameter json: raw JSON object to parse the MMKEdgeNode nodes from.
-     - Parameter completion: Completion block returning an array of parsed MMKEdgeNode nodes.
+     - Parameter json: raw JSON object to parse the EdgeEngineNode nodes from.
+     - Parameter completion: Completion block returning an array of parsed EdgeEngineNode nodes.
      */
-    class func getParsedNodes(json: JSON , completion: @escaping ([MMKEdgeNode]?) -> Void) {
+    class func getParsedNodes(json: JSON , completion: @escaping ([EdgeEngineNode]?) -> Void) {
         
-        var newNodes: [MMKEdgeNode] = []
+        var newNodes: [EdgeEngineNode] = []
         
         for (_, node) in (json.array?.enumerated())! {
-            let edgeNode = MMKEdgeNode.init(json: node)
+            let edgeNode = EdgeEngineNode.init(json: node)
             if edgeNode != nil {
                 newNodes.append(edgeNode!)
             }

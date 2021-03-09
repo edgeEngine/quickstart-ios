@@ -14,7 +14,7 @@ Navigate to the example iOS directory
 
 ```cd /examples/iOS\ Hello\ App/```
 
-Check your cocoapod version to make sure you're good to go with a compatible version (1.6.1+)
+Check your cocoapod version to make sure you're good to go with a compatible version (1.5.3+)
 
 ```pod --version```
 
@@ -30,7 +30,7 @@ and then update if relevant updates are available
 
 ```pod update```
 
-Start Xcode 10.2+ and open example_microservice_app.xcworkspace. **Note** You must use a **real device**, not an emulator to build the example application. edgeSDK functionality will not work on emulated devices.
+Start Xcode 10.1+ and open example_microservice_app.xcworkspace. **Note** You must use a **real device**, not an emulator to build the example application. edgeSDK functionality will not work on emulated devices.
 
 ## Using the app
 
@@ -44,7 +44,7 @@ Then login using your Developer Account credentials and select Allow to exit the
 
 Tap Associate to link your developer account to this edgeSDK runtime
 
-Press load Deploy button to deploy the [example microservice](https://developer.mimik.com/docs/microservices/deploy) on this device
+Press load Deploy button to deploy the [example microservice](https://developers.mimik360.com/docs/1.2.0/microservices/how-to-deploy-example-microservice.html) on this device
 
 Once deployed you can scan for devices running edgeSDK with the example micro service deployed in two different ways:
 
@@ -59,12 +59,16 @@ Tap any of the discovered devices to see a Hello WORLD!!! response at the bottom
 
 Below is the message sequence between example app, microservice and edgeSDK:
 
+![app registration](https://developers.mimik360.com/assets/images/documentation/Hello App registration.png)
+
 1. First the example app associates edgeSDK with accountID
 1. Developer registers its sample app to mimik developer portal and receives the account information and account key
 1. In the sample app, it uses registered account key to associate sample app with edgeSDK 
 1. App verifies that edgeSDK associated with the correct account info.
 
 After  the following message flow is used to retrieve account cluster nodes:
+
+![account cluster](https://developers.mimik360.com/assets/images/documentation/example microservice account cluster.png)
 
 1. Sample app first calls account service from example microservice to retrieve account cluster nodes from the BES using the authorization key of associated account
 1. mPO requests the nodes information  including BEP references of account cluster nodes.
@@ -78,4 +82,4 @@ After  the following message flow is used to retrieve account cluster nodes:
 
 ## Recommended guides
 
-- [mimik serverless JavaScript programming API](https://developer.mimik.com/docs/api-guides/apis)
+- [mimik serverless JavaScript programming API](https://developers.mimik360.com/docs/1.2.0/resources/how-to-use-mimik-serverless-javascript-programming-api.html)

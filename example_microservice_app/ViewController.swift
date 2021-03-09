@@ -10,613 +10,244 @@ import UIKit
 import Alamofire
 import CoreLocation
 import SwiftyJSON
-import edgeSDK_iOS
-import edgeSDK_iOS_app_auth
-import edgeSDK_iOS_app_ops
-import os.log
+import RxSwift
+import MIMIKEdgeMobileClient
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var edgeNodes: [MMKEdgeNode] = []
-    var appAuthWrapper:  edgeSDK_iOS_app_auth?
-    var appOpsWrapper:  edgeSDK_iOS_app_ops?
+    var edgeNodes: [EdgeEngineNode] = []
+    var disposeBag = DisposeBag()
     
+    @IBOutlet weak var authorizeButton: UIButton!
+    @IBOutlet weak var listNetworkButton: UIButton!
+    @IBOutlet weak var listNearbyButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var button01: UIButton!
-    @IBOutlet weak var button02: UIButton!
-    @IBOutlet weak var button03: UIButton!
-    @IBOutlet weak var button04: UIButton!
-    @IBOutlet weak var button05: UIButton!
-    @IBOutlet weak var button06: UIButton!
-    @IBOutlet weak var button07: UIButton!
-    @IBOutlet weak var button08: UIButton!
-    @IBOutlet weak var button09: UIButton!
-    @IBOutlet weak var button10: UIButton!
-    @IBOutlet weak var button11: UIButton!
-    @IBOutlet weak var button12: UIButton!
+    @IBOutlet weak var activitySpinner: UIActivityIndicatorView!
     @IBOutlet weak var bottomInfoLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.button01.setTitle("StartEdge", for: UIControl.State.normal)
-        self.button01.setTitle("StartEdge", for: UIControl.State.disabled)
-
-        self.button02.setTitle("Authorize", for: UIControl.State.normal)
-        self.button02.setTitle("Authorize", for: UIControl.State.disabled)
-        
-        self.button03.setTitle("Deploy", for: UIControl.State.normal)
-        self.button03.setTitle("Deploy", for: UIControl.State.disabled)
-        
-        self.button04.setTitle("UpdateGPS", for: UIControl.State.normal)
-        self.button04.setTitle("UpdateGPS", for: UIControl.State.disabled)
-        
-        self.button05.setTitle("GetNetwork", for: UIControl.State.normal)
-        self.button05.setTitle("GetNetwork", for: UIControl.State.disabled)
-
-        self.button06.setTitle("GetNearby", for: UIControl.State.normal)
-        self.button06.setTitle("GetNearby", for: UIControl.State.disabled)
-
-        self.button07.setTitle("Info", for: UIControl.State.normal)
-        self.button07.setTitle("Info", for: UIControl.State.disabled)
-        
-        self.button08.setTitle("Remove", for: UIControl.State.normal)
-        self.button08.setTitle("Remove", for: UIControl.State.disabled)
-        
-        self.button09.setTitle("UnAuthorize", for: UIControl.State.normal)
-        self.button09.setTitle("UnAuthorize", for: UIControl.State.disabled)
-
-        self.button10.setTitle("edgeIdToken", for: UIControl.State.normal)
-        self.button10.setTitle("edgeIdToken", for: UIControl.State.disabled)
-
-        self.button11.isEnabled = false
-        self.button11.setTitle("n/a", for: UIControl.State.normal)
-        self.button11.setTitle("n/a", for: UIControl.State.disabled)
-        
-        self.button12.setTitle("StopEdge", for: UIControl.State.normal)
-        self.button12.setTitle("StopEdge", for: UIControl.State.disabled)
-        
-        self.bottomInfoLabel.text = "Ready"
-        self.setupLoggingLevels()
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
     }
-    
-    /**
-     Set logging levels for various modules and print several logging test messages.
-     */
-    func setupLoggingLevels() -> Void {
         
-        // This application's logging level
-        MMKLog.changeLoggingLevelTo(level: .debug, subsystem: .edgeSDK_iOS_example)
+    @IBAction func startEdgeEngine(_ sender: UIButton) {        
+        self.bottomInfoLabel.text = "Starting edgeEngine on this device."
         
-        // Two ways of setting the edgeSDK-iOS framework's logging level. They accomplish the same thing.
-        edgeSDK_iOS.changeLoggingLevelTo(level: .info)
-        MMKLog.changeLoggingLevelTo(level: .info, subsystem: .edgeSDK_iOS)
-        
-        // Two ways of setting the edgeSDK-iOS-app-ops framework's logging level. They accomplish the same thing.
-        edgeSDK_iOS_app_ops.changeLoggingLevelTo(level: .info)
-        MMKLog.changeLoggingLevelTo(level: .info, subsystem: .edgeSDK_iOS_app_ops)
-        
-        // Two ways of setting the edgeSDK-iOS-app-auth framework's logging level. They accomplish the same thing.
-        edgeSDK_iOS_app_auth.changeLoggingLevelTo(level: .info)
-        MMKLog.changeLoggingLevelTo(level: .info, subsystem: .edgeSDK_iOS_app_auth)
-        
-        // Other mimik module, for illustration purposes only
-        MMKLog.changeLoggingLevelTo(level: .info, subsystem: .edgeSDK_iOS_access)
-        
-        // Examples of logging messages in different categories
-        MMKLog.log(message: "example logging .info", type: .info, subsystem: .edgeSDK_iOS_example)
-        MMKLog.log(message: "example logging .error", type: .error, subsystem: .edgeSDK_iOS_example)
-        MMKLog.log(message: "example logging .debug", type: .debug, subsystem: .edgeSDK_iOS_example)
-        MMKLog.log(message: "example logging .fault", type: .fault, subsystem: .edgeSDK_iOS_example)
-    }
-    
-    /**
-     Initiates edgeSDK startup sequence
-     MMKEdgeManager singleton class holds a reference to the edgeProvider instance after its initialization
-     */
-    @IBAction func button01Action(_ sender: UIButton) {
-        
-        self.buttonsEnabled(enabled: false)
-        self.bottomInfoLabel.text = "startEdge called"
-        
-        if self.appOpsWrapper == nil {
-            self.appOpsWrapper = edgeSDK_iOS_app_ops.init()
-        }
-        
-        guard let appOpsWrapper = self.appOpsWrapper else {
-            fatalError()
-        }
-        
-        let edge_nodeId: String = UIDevice.current.name.contains("iPad") ? "iPad-UUID-12345678" : "iPhone-UUID-12345678"
-        appOpsWrapper.startEdge(nodeId: edge_nodeId, delegate: self, completion: { state in
+        // First we start edgeEngine
+        MMKLibraryAdapter.startEdgeEngine { (result) in
             
-            guard state.error == nil else {
-                DispatchQueue.main.async {
-                    MMKLog.log(message: "startEdge Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "edgeSDK failed to start: \(state.error?.localizedDescription ?? "no Error description")"
-                    self.buttonsEnabled(enabled: true)
-                }
+            // Check if edgeEngine startup was a success
+            guard result == true else {
+                // Show an error if it didn't
+                MIMIKLog.log(message: "⛔️ start edgeEngine error", type: .error, subsystem: .mimik_example_app)
+                self.bottomInfoLabel.text = "⛔️ start edgeEngine error"
                 return
             }
             
-            DispatchQueue.main.async {
-                self.bottomInfoLabel.text = "edgeSDK is running."
-                self.buttonsEnabled(enabled: true)
+            // Then we get some runtime information about edgeEngine
+            MMKLibraryAdapter.getEdgeEngineInfo().observe(on: MainScheduler.instance).subscribe(onNext: { info in
+                MIMIKLog.log(message: "👍 start edgeEngine success. \n ### \(info?.linkLocalIp ?? "N/A") \n ### \(MMKLibraryAdapter.edgeServiceLink() ?? "N/A")", type: .info, subsystem: .mimik_example_app)
+                self.bottomInfoLabel.text = "👍 edgeEngine \(info?.version ?? "N/A") started\nlinkLocalIp: \(info?.linkLocalIp ?? "N/A")\nservice link: \(MMKLibraryAdapter.edgeServiceLink() ?? "N/A")"
+            }).disposed(by: self.disposeBag)
+        }
+    }
+    
+    @IBAction func stopEdgeEngine(_ sender: UIButton) {
+        self.bottomInfoLabel.text = "Stopping edgeEngine on this device."
+        MMKLibraryAdapter.stopEdgeEngine { (result) in
+            
+            guard result == true else {
+                MIMIKLog.log(message: "⛔️ stop edgeEngine error.", type: .error, subsystem: .mimik_example_app)
+                self.bottomInfoLabel.text = "⛔️ stop edgeEngine error."
+                return
             }
             
-            appOpsWrapper.getConfig({ state in
-                
-                guard state.error == nil else {
-                    MMKLog.log(message: "getConfig Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                    return
-                }
-                
-                guard state.config != nil else {
-                    MMKLog.log(message: "getConfig result is nil.", type: .error, subsystem: .edgeSDK_iOS_example)
-                    return
-                }
-                
-                MMKAuthenticationManager.sharedInstance.edgeConfig = state.config
-                MMKLog.log(message: "edgeConfig: ", type: .info, value: "\(MMKAuthenticationManager.sharedInstance.edgeConfig!)", subsystem: .edgeSDK_iOS_example)
-            })
-        })
+            MIMIKLog.log(message: "👍 stop edgeEngine success.", type: .info, subsystem: .mimik_example_app)
+            self.bottomInfoLabel.text = "👍 stop edgeEngine success."
+        }
     }
     
     /**
      Starts the authentication session.
      */
-    @IBAction func button02Action(_ sender: UIButton) {
-        self.buttonsEnabled(enabled: false)
-        self.bottomInfoLabel.text = "OID login in progress..."
+    @IBAction func authorizationAction(_ sender: UIButton) {
+        sender.isEnabled = false
+        self.bottomInfoLabel.text = "Authorization in progress..."
+        self.activitySpinner.startAnimating()
         
-        if self.appAuthWrapper == nil {
-            self.appAuthWrapper = edgeSDK_iOS_app_auth.init()
-        }
-        
-        guard let appAuthWrapper = self.appAuthWrapper else {
-            fatalError()
-        }
-        
-        // Configuration information is located in the MMKConfigurationManager class
-        let authConfig = MMKAuthConfig.init(clientId: MMKConfigurationManager.clientId(), redirectUrl: MMKConfigurationManager.redirectURL(), additionalScopes: ["edge:gps:update"], authorizationRootUrl: MMKConfigurationManager.authorizationURL())
-        
-        appAuthWrapper.authorize(authConfig: authConfig, viewController: self, completion: { state in
+        MMKLibraryAdapter.authorizePlatform(self).observe(on: MainScheduler.instance).subscribe(onNext: { (result) in
             
-            DispatchQueue.main.async {
-                guard state.error == nil else {
-                    MMKLog.log(message: "Authorization finished with an Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "Authorization finished with an Error: \(state.error?.localizedDescription ?? "no Error description")"
-                    MMKAuthenticationManager.sharedInstance.clearAuthStatus()
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                guard state.status != nil else {
-                    MMKLog.log(message: "Authorization finished with an Error", type: .error, subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "Authorization finished with an Error"
-                    MMKAuthenticationManager.sharedInstance.clearAuthStatus()
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                MMKAuthenticationManager.sharedInstance.saveAuthStatus(status: state.status!)
-                MMKLog.log(message: "Authorization finished successfully. accessToken: ", type: .info, value: "\(state.status?.accessToken ?? "no-token")", subsystem: .edgeSDK_iOS_example)
-                self.bottomInfoLabel.text = "Authorization finished successfully."
-                self.buttonsEnabled(enabled: true)
+            sender.isEnabled = true
+            
+            guard result.error == nil else {
+                MIMIKLog.log(message: "⛔️ authorizePlatform error", type: .error, subsystem: .mimik_example_app)
+                self.bottomInfoLabel.text = "⛔️ authorizePlatform error"
+                self.activitySpinner.stopAnimating()
+                return
             }
-        })
+
+            MIMIKLog.log(message: "👍 authorizePlatform success.", type: .info, subsystem: .mimik_example_app)
+            self.bottomInfoLabel.text = "👍 authorizePlatform success."
+            self.activitySpinner.stopAnimating()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.deployLocalMicroservices(sender)
+            }
+            
+        }, onError: { (error) in
+            MIMIKLog.log(message: "⛔️ authorizePlatform error", type: .error, subsystem: .mimik_example_app)
+            self.bottomInfoLabel.text = "⛔️ authorizePlatform error"
+            self.activitySpinner.stopAnimating()
+            sender.isEnabled = true
+            
+        }).disposed(by: self.disposeBag)
+    }
+    
+    
+    @IBAction func unauthorizeAction(_ sender: UIButton) {
+        sender.isEnabled = false
+        self.bottomInfoLabel.text = "Unauthorization in progress..."
+        self.activitySpinner.startAnimating()
+        
+        MMKLibraryAdapter.unauthorizePlatform(self).observe(on: MainScheduler.instance).subscribe(onNext: { (result) in
+            
+            sender.isEnabled = true
+            
+            guard result.error == nil else {
+                MIMIKLog.log(message: "⛔️ unauthorizePlatform error", type: .error, subsystem: .mimik_example_app)
+                self.bottomInfoLabel.text = "⛔️ unauthorizePlatform error"
+                self.activitySpinner.stopAnimating()
+                return
+            }
+
+            MIMIKLog.log(message: "👍 unauthorizePlatform success.", type: .info, subsystem: .mimik_example_app)
+            self.bottomInfoLabel.text = "👍 unauthorizePlatform success."
+            self.activitySpinner.stopAnimating()
+            
+        }, onError: { (error) in
+            MIMIKLog.log(message: "⛔️ unauthorizePlatform error", type: .error, subsystem: .mimik_example_app)
+            self.bottomInfoLabel.text = "⛔️ unauthorizePlatform error"
+            self.activitySpinner.stopAnimating()
+            sender.isEnabled = true
+            
+        }).disposed(by: self.disposeBag)
     }
     
     /**
      Starts the example micro service loading process by uploading its content via a edgeSDK service URL.
      */
-    @IBAction func button03Action(_ sender: UIButton) {
+    func deployLocalMicroservices(_ sender: UIButton) {
         
-        self.buttonsEnabled(enabled: false)
-        self.bottomInfoLabel.text = "Deploying the example micro service..."
+        self.bottomInfoLabel.text = "Deploying example micro service locally..."
+        self.activitySpinner.startAnimating()
         
-        if self.appOpsWrapper == nil {
-            self.appOpsWrapper = edgeSDK_iOS_app_ops.init()
-        }
-        
-        guard let appOpsWrapper = self.appOpsWrapper else {
-            fatalError()
-        }
-        
-        guard let edgeAccessToken = MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) else {
-            self.bottomInfoLabel.text = "edgeSDK failed to deploy the example micro service: Missing edgeAccessToken token"
-            self.buttonsEnabled(enabled: true)
+        guard let checkedExampleTarPath = MMKLibraryAdapter.resourcePathInBundle(named: "example-v1", dotExtension: ".tar") else {
+            self.bottomInfoLabel.text = "⛔️ Failed to deploy example"
+            self.activitySpinner.stopAnimating()
+            sender.isEnabled = true
             return
         }
         
-        let config: MMKMicroserviceDeploymentConfig = self.microserviceConfig()
-        appOpsWrapper.deployMicroservice(edgeAccessToken: edgeAccessToken, config: config) { state in
+        let exampleConfig = MMKLibraryAdapter.microserviceConfiguration(type: .example)
+        
+        MMKLibraryAdapter.deployCustomMicroservice(config: exampleConfig, imageTarPath: checkedExampleTarPath).subscribe(onNext: { microservice in
             
-            DispatchQueue.main.async {
-                guard state.error == nil else {
-                    MMKLog.log(message: "deployEdgeMicroservice Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "edgeSDK failed to deploy the example micro service: \(state.error?.localizedDescription ?? "no Error description")"
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                MMKLog.log(message: "deployEdgeMicroservice status ok", type: . info, subsystem: .edgeSDK_iOS_example)
-                self.bottomInfoLabel.text = "edgeSDK deployed the example micro service"
-                self.buttonsEnabled(enabled: true)
-            }
-        }
-    }
-    
-    /**
-     Start the GPS location update process.
-     */
-    @IBAction func button04Action(_ sender: UIButton) {
-        
-        let message = "In order to use mimik's location services you need to update your mimik developer profile information.\n\nPlease see the mimik developer portal for more details."
-        let alertVC = UIAlertController.init(title: "Location Services.", message: message, preferredStyle: .alert)
-        
-        let okAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
-        
-        let callAction = UIAlertAction.init(title: "Call UpdateGPS", style: .default) { (action) in
-            self.buttonsEnabled(enabled: false)
-            self.bottomInfoLabel.text = "updateGps called. This may take a minute."
+            self.bottomInfoLabel.text = "👍 Deployed \(microservice.image?.name ?? "N/A")"
+            self.activitySpinner.stopAnimating()
+                        
+        }, onError: { (error) in
             
-            MMKLocationManager.sharedInstance.provideLocation { (location, error) in
-                
-                guard error == nil, location != nil else {
-                    
-                    let message = error == nil ? "Change the iOS setting at edgeSDK | Allow Location Access or contact the device administrator" : error!.domain
-                    
-                    self.bottomInfoLabel.text = message
-                    self.buttonsEnabled(enabled: true)
-                    self.showLocationServicesWarning(message: message)
-                    return
-                }
-                
-                self.updateGps(location: location!)
-            }
-        }
-        
-        let portalAction = UIAlertAction.init(title: "Take me to Dev Portal", style: UIAlertAction.Style.default) { (action) in
-            if let url = URL(string: "https://developer.mimik360.com"), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:])
-            }
-        }
-        
-        alertVC.addAction(okAction)
-        alertVC.addAction(portalAction)
-        alertVC.addAction(callAction)
-        
-        self.present(alertVC, animated: false, completion: nil)
-    }
-    
-    /**
-     Uses the edgeSDK app ops wrapper to send the devices's GPS location it received from the MMKLocatioManager to edgeSDK. It can only be done with a valid authorization token, so an edge access token is also supplied.
-     */
-    private func updateGps(location: CLLocation) -> Void {
-        
-        if self.appOpsWrapper == nil {
-            self.appOpsWrapper = edgeSDK_iOS_app_ops.init()
-        }
-        
-        guard let appOpsWrapper = self.appOpsWrapper else {
-            fatalError()
-        }
-        
-        guard let edgeAccessToken = MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) else {
-            self.bottomInfoLabel.text = "UpdateGps Error. Missing edgeAccessToken token. Please authorize."
-            self.buttonsEnabled(enabled: true)
-            return
-        }
-        
-        appOpsWrapper.updateGps(edgeAccessToken, location: location) { state in
-            DispatchQueue.main.async {
-                guard state.error == nil else {
-                    MMKLog.log(message: "UpdateGps Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description.")", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "UpdateGPS Error: \(state.error?.localizedDescription ?? "no Error description.")"
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                self.bottomInfoLabel.text = "UpdateGps OK"
-                self.buttonsEnabled(enabled: true)
-            }
-        }
-    }
-    
-    /**
-     Shows a popup alert when location services are not available.
-     */
-    private func showLocationServicesWarning(message: String) -> Void {
-        
-        let alertVC = UIAlertController.init(title: "Location Unavailable.", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction.init(title: "OK", style: .default, handler: nil)
-        alertVC.addAction(okAction)
-        
-        self.present(alertVC, animated: false, completion: nil)
+            self.bottomInfoLabel.text = "⛔️ Failed to deploy microservice."
+            self.activitySpinner.stopAnimating()
+            
+        }).disposed(by: self.disposeBag)
     }
     
     /**
      Uses MMKGetManager to sends a getNetwork API call that returns a list of edgeSDK nodes visible on the local network
      */
-    @IBAction func button05Action(_ sender: UIButton) {
+    @IBAction func getNodesNetwork() {
         
-        self.buttonsEnabled(enabled: false)
         self.edgeNodes.removeAll()
         self.tableView.reloadData()
-        self.bottomInfoLabel.text = "Calling getNetwork"
         
-        MMKGetManager.getNodes(type: .network, completion: { (nodes, error) in
+        CallManager.getNodes(type: .network, completion: { (nodes, error) in
             
             guard error == nil else {
                 self.tableView.reloadData()
-                self.bottomInfoLabel.text = error?.localizedDescription
-                sender.isEnabled = true
-                self.buttonsEnabled(enabled: true)
+                self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                 return
             }
             
             guard nodes != nil else {
                 self.tableView.reloadData()
-                self.bottomInfoLabel.text = "Unable to process the response"
-                sender.isEnabled = true
-                self.buttonsEnabled(enabled: true)
+                self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                 return
             }
             
-            sender.isEnabled = true
             self.edgeNodes = nodes!
             self.tableView.reloadData()
 
             let nodeString: String = self.edgeNodes.count == 1 ? "node" : "nodes"
-            self.bottomInfoLabel.text = "Received information about \(self.edgeNodes.count) \(nodeString)"
-            self.buttonsEnabled(enabled: true)
+            self.bottomInfoLabel.text = "👍 Received information about \(self.edgeNodes.count) \(nodeString)"
         })
     }
-    
+
     /**
      Uses MMKGetManager to sends a getNearby API call that returns a list of edge nodes visible across all networks considered within a "proximity" distance.
      - Remarks: The returned list will be either IP or GPS location based, depending on whether device's GPS location information has been sent to edgeSDK.
      */
-    @IBAction func button06Action(_ sender: UIButton) {
-        
-        self.buttonsEnabled(enabled: false)
+    @IBAction func getNodesNearbyAction() {
+
         self.edgeNodes.removeAll()
         self.tableView.reloadData()
-        self.bottomInfoLabel.text = "Calling getNearby"
         
-        MMKGetManager.getNodes(type: .nearby, completion: { (nodes, error) in
+        CallManager.getNodes(type: .nearby, completion: { (nodes, error) in
             
             guard error == nil else {
                 self.tableView.reloadData()
-                self.bottomInfoLabel.text = error?.localizedDescription
-                sender.isEnabled = true
-                self.buttonsEnabled(enabled: true)
+                self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                 return
             }
             
             guard nodes != nil else {
                 self.tableView.reloadData()
-                self.bottomInfoLabel.text = "Unable to process the response"
-                sender.isEnabled = true
-                self.buttonsEnabled(enabled: true)
+                self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                 return
             }
-
-            sender.isEnabled = true
+            
             self.edgeNodes = nodes!
             self.tableView.reloadData()
-            
+
             let nodeString: String = self.edgeNodes.count == 1 ? "node" : "nodes"
-            self.bottomInfoLabel.text = "Received information about \(self.edgeNodes.count) \(nodeString)"
-            self.buttonsEnabled(enabled: true)
+            self.bottomInfoLabel.text = "👍 Received information about \(self.edgeNodes.count) \(nodeString)"
         })
     }
-    
-    /**
-     Combines several get info calls into one to provide an edgeSDK configuration overview.
-     */
-    @IBAction func button07Action(_ sender: UIButton) {
         
-        self.buttonsEnabled(enabled: false)
-        
-        guard MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) != nil else {
-            self.bottomInfoLabel.text = "edgeSDK failed to get debug information: Missing edgeAccessToken token"
-            self.buttonsEnabled(enabled: true)
-            return
-        }
-        
-        self.getCombinedDebugInfo { (debugInfo,error) in
-            
-            guard debugInfo != nil, !(debugInfo?.isEmpty)! else {
-                self.bottomInfoLabel.text = "getCombinedDebugInfo finished empty. maybe edgeSDK is not running?"
-                self.buttonsEnabled(enabled: true)
+    @IBAction func getEdgeInfo(_ sender: UIButton) {
+        MMKLibraryAdapter.getEdgeEngineInfo().observe(on: MainScheduler.instance).subscribe(onNext: { result in
+            guard let checkedDescription = result?.mimikDescription else {
+                self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                 return
             }
             
-            DispatchQueue.main.async {
-                let alertVC = UIAlertController.init(title: "Debug Info", message: debugInfo, preferredStyle: .alert)
-                let okAction = UIAlertAction.init(title: "OK", style: .default, handler: nil)
-                
-                alertVC.addAction(okAction)
-                self.present(alertVC, animated: true, completion: {
-                    self.bottomInfoLabel.text = "getCombinedDebugInfo finished."
-                    self.buttonsEnabled(enabled: true)
-                })
-            }
-        }
+            print("👍 info: \(checkedDescription)")
+            self.bottomInfoLabel.text = "👍 info: \(checkedDescription)"
+        }).disposed(by: self.disposeBag)
     }
     
-    /**
-     Removes deployed micro services from edgeSDK.
-     */
-    @IBAction func button08Action(_ sender: UIButton) {
-        
-        sender.isEnabled = false
-        
-        if self.appOpsWrapper == nil {
-            self.appOpsWrapper = edgeSDK_iOS_app_ops.init()
-        }
-        
-        guard let appOpsWrapper = self.appOpsWrapper else {
-            fatalError()
-        }
-        
-        guard let edgeAccessToken = MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) else {
-            self.bottomInfoLabel.text = "edgeSDK failed to remove the example micro service: Missing edgeAccessToken token"
-            self.buttonsEnabled(enabled: true)
-            return
-        }
-        
-        let config: MMKMicroserviceDeploymentConfig = self.microserviceConfig()
-        appOpsWrapper.removeMicroservice(edgeAccessToken: edgeAccessToken, config: config) { state in
-            
-            DispatchQueue.main.async {
-                guard state.error == nil else {
-                    MMKLog.log(message: "deployEdgeMicroservice Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "edgeSDK failed to remove the example micro service: \(state.error?.localizedDescription ?? "no Error description")"
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                MMKLog.log(message: "deployEdgeMicroservice status ok", type: . info, subsystem: .edgeSDK_iOS_example)
-                self.bottomInfoLabel.text = "edgeSDK removed the example micro service"
-                self.buttonsEnabled(enabled: true)
-            }
-        }
-    }
-    
-    /**
-     Starts an unautorization session.
-     */
-    @IBAction func button09Action(_ sender: UIButton) {
-        self.buttonsEnabled(enabled: false)
-        self.bottomInfoLabel.text = "OID unauthorize in progress..."
-        
-        if self.appAuthWrapper == nil {
-            self.appAuthWrapper = edgeSDK_iOS_app_auth.init()
-        }
-        
-        guard let appAuthWrapper = self.appAuthWrapper else {
-            fatalError()
-        }
-        
-        // Configuration information is located in the MMKConfigurationManager class
-        let authConfig = MMKAuthConfig.init(clientId: MMKConfigurationManager.clientId(), redirectUrl: MMKConfigurationManager.redirectURL(), additionalScopes: nil, authorizationRootUrl: MMKConfigurationManager.authorizationURL())
-        
-        appAuthWrapper.unauthorize(authConfig: authConfig, viewController: self) { state in
-         
-            DispatchQueue.main.async {
-                guard state.error == nil else {
-                    MMKLog.log(message: "auth status Error: ", type: .error, value: "\(String(describing: state.error))", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "OID unauthorize finished with an Error: \(state.error?.localizedDescription ?? "no Error description")"
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                guard state.status != nil else {
-                    MMKLog.log(message: "auth status unknown Error", type: .error, subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "OID unauthorize finished with an unknown Error"
-                    MMKAuthenticationManager.sharedInstance.clearAuthStatus()
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-                
-                MMKAuthenticationManager.sharedInstance.clearAuthStatus()
-                self.bottomInfoLabel.text = "OID unauthorize finished successfully."
-                self.buttonsEnabled(enabled: true)
-            }
-        }
-    }
-    
-    /**
-     Get edgeIdToken
-     */
-    @IBAction func button10Action(_ sender: UIButton) {
-        
-        self.buttonsEnabled(enabled: false)
-        self.bottomInfoLabel.text = "getEdgeIdToken called"
-        
-        if self.appAuthWrapper == nil {
-            self.appAuthWrapper = edgeSDK_iOS_app_auth.init()
-        }
-        
-        guard let appAuthWrapper = self.appAuthWrapper else {
-            fatalError()
-        }
-        
-        appAuthWrapper.edgeIdTokenDecoded { state in
-         
-            guard state.error == nil, let checkedContent = state.content as? [String:Any] else {
-                MMKLog.log(message: "Get edgeIdToken Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                self.bottomInfoLabel.text = "Get edgeIdToken Error: \(state.error?.localizedDescription ?? "no Error description")"
-                self.buttonsEnabled(enabled: true)
+    @IBAction func getEdgeIdToken(_ sender: UIButton) {
+        MMKLibraryAdapter.getEdgeEngineIdToken().observe(on: MainScheduler.instance).subscribe(onNext: { result in
+            guard let checkedDescription = result.decoded?.rawString() else {
+                self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                 return
             }
             
-            DispatchQueue.main.async {
-                let alertVC = UIAlertController.init(title: "Decoded edgeIdToken", message: checkedContent.description, preferredStyle: .alert)
-                let okAction = UIAlertAction.init(title: "OK", style: .default, handler: nil)
-                
-                alertVC.addAction(okAction)
-                self.present(alertVC, animated: true, completion: {
-                    self.bottomInfoLabel.text = "Get edgeIdToken finished."
-                    self.buttonsEnabled(enabled: true)
-                })
-            }
-        }
-    }
-    
-    /**
-     Starts the edgeSDK shutdown procedure
-     */
-    @IBAction func button12Action(_ sender: UIButton) {
-
-        self.buttonsEnabled(enabled: false)
-        self.bottomInfoLabel.text = "stopEdge called"
-
-        if self.appOpsWrapper == nil {
-            self.appOpsWrapper = edgeSDK_iOS_app_ops.init()
-        }
-
-        guard let appOpsWrapper = self.appOpsWrapper else {
-            fatalError()
-        }
-
-        appOpsWrapper.stopEdge(completion: { state in
-
-            DispatchQueue.main.async {
-                guard state.error == nil else {
-                    MMKLog.log(message: "stopEdge Error: ", type: .error, value: "\(state.error?.localizedDescription ?? "no Error description")", subsystem: .edgeSDK_iOS_example)
-                    self.bottomInfoLabel.text = "edgeSDK failed to stop: \(state.error?.localizedDescription ?? "no Error description")"
-                    self.buttonsEnabled(enabled: true)
-                    return
-                }
-
-                self.bottomInfoLabel.text = "edgeSDK is stopped. Lifecycle listener unregistered"
-                self.buttonsEnabled(enabled: true)
-            }
-        })
-    }
-    
-    /**
-     Toggles UI buttons between enabled and disabled.
-     */
-    func buttonsEnabled(enabled: Bool) -> Void {
-        DispatchQueue.main.async {
-            self.button01.isEnabled = enabled
-            self.button02.isEnabled = enabled
-            self.button03.isEnabled = enabled
-            self.button04.isEnabled = enabled
-            self.button05.isEnabled = enabled
-            self.button06.isEnabled = enabled
-            self.button07.isEnabled = enabled
-            self.button08.isEnabled = enabled
-            self.button09.isEnabled = enabled
-            self.button10.isEnabled = enabled
-            self.button11.isEnabled = false
-            self.button12.isEnabled = enabled
-        }
+            print("👍 id token: \(checkedDescription)")
+            self.bottomInfoLabel.text = "👍 id token: \(checkedDescription)"
+            
+        }).disposed(by: self.disposeBag)
     }
 }
 
@@ -630,29 +261,30 @@ internal extension ViewController {
         self.bottomInfoLabel.text = "Connecting to node: \(node.displayName()), please wait for a response."
         
         node.getBEPURL { (url, error) in
-            let updatedNode: MMKEdgeNode = node
+            let updatedNode: EdgeEngineNode = node
             
             if let checkedUrl = url {
                 
+                updatedNode.url = checkedUrl
                 updatedNode.urlString = checkedUrl.absoluteString
                 self.bottomInfoLabel.text = "Calling hello endpoint on node: \(node.urlString ?? "no-url-detected"), please wait for a response."
                 
-                MMKGetManager.getHelloResponse(node: node, completion: { (json,error) in
+                CallManager.getHelloResponse(node: node, completion: { (json,error) in
                     
                     guard error == nil else {
                         self.tableView.reloadData()
-                        self.bottomInfoLabel.text = error?.localizedDescription
+                        self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                         return
                     }
                     
                     guard json != nil else {
                         self.tableView.reloadData()
-                        self.bottomInfoLabel.text = "Unable to process the response"
+                        self.bottomInfoLabel.text = "⛔️ Unable to Proceed"
                         return
                     }
                     
-                    self.bottomInfoLabel.text = "\(json!["JSONMessage"]) received from \(node.displayName())"
-                    MMKLog.log(message: "Hello response from node: ", type: .info, value: "\(node.urlString ?? "no-url-detected") json: \(json ?? JSON())", subsystem: .edgeSDK_iOS_example)
+                    self.bottomInfoLabel.text = "👍 \(json!["JSONMessage"]) received from \(node.displayName())"
+                    MIMIKLog.log(message: "👍 Hello response from node: ", type: .info, value: "\(node.urlString ?? "no-url-detected") json: \(json ?? JSON())", subsystem: .mimik_example_app)
                 })
                 
             }
@@ -660,7 +292,7 @@ internal extension ViewController {
                 self.bottomInfoLabel.text = checkedError.localizedDescription
             }
             else {
-                self.bottomInfoLabel.text = "An unknown Error occured"
+                self.bottomInfoLabel.text = "⛔️ An unknown Error occured"
             }
         }
     }
@@ -678,120 +310,21 @@ internal extension ViewController {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "NodeCell")!
         let node = self.edgeNodes[indexPath.row]
-        
-        cell.textLabel?.text = "name: " + node.displayName()
-        cell.detailTextLabel?.text = "id:   "+node.id! + "\nos: \(node.os ?? "")" + "\nurl: \(node.urlString ?? "external network")"
+        cell.textLabel?.text = node.displayName()
+        cell.detailTextLabel?.text = node.displayServices()
         return cell
     }
-}
-
-extension ViewController {
     
-    /**
-     This is where the .tar micro service is stored in the application's bundle
-     */
-    func microServiceBundleStorageURL(name: String) -> URL? {
-        let microServiceFileName = self.microServiceTarFileName(name: name, withExtension: false)
-        guard let microServiceBundlePath = Bundle.main.path(forResource: microServiceFileName, ofType: ".tar") else {
-            return nil
-        }
-        
-        let fileURL = URL.init(fileURLWithPath: microServiceBundlePath)
-        return fileURL
-    }
-    
-    /**
-     File name for each micro service tar file.
-     */
-    func microServiceTarFileName(name: String, withExtension: Bool) -> String {
-        return withExtension == true ? name+".tar":name
-    }
-    
-    /**
-     A configuration object for each micro service.
-     */
-    func microserviceConfig() -> MMKMicroserviceDeploymentConfig {
-        
-        guard let imageUrl = self.microServiceBundleStorageURL(name: "example-v1") else {
-            fatalError()
-        }
-        
-        let envVariables: [String:String] = [
-            "BEAM": MMKConfigurationManager.edgeServiceLink() + "/beam/v1",
-            "uMDS": MMKConfigurationManager.edgeServiceLink() + "/mds/v1"
-        ]
-        
-        return MMKMicroserviceDeploymentConfig.init(name: "example-v1", apiRootUrl: "/example-v1/v1", imagePath: imageUrl.path, envVariables: envVariables)
-    }
-    
-    /**
-     Combined debug information.
-     */
-    func getCombinedDebugInfo(_ completion: @escaping ((response: String?, error: Error?)) -> Void) {
-        if self.appOpsWrapper == nil {
-            self.appOpsWrapper = edgeSDK_iOS_app_ops.init()
-        }
-        
-        guard let appOpsWrapper = self.appOpsWrapper else {
-            fatalError()
-        }
-        
-        guard let edgeAccessToken = MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) else {
-            completion((nil,NSError.init(domain: "Missing edgeAccessToken", code: 500, userInfo: nil)))
-            return
-        }
-        
-
-        var debugInfo: String = ""
-        
-        appOpsWrapper.getDeployedImages(edgeAccessToken: edgeAccessToken) { state in
-            
-            if state.error == nil {
-                let imagesJson = JSON.init(state.content ?? "")
-                debugInfo += "getDeployedImages:\n"
-                debugInfo += imagesJson.rawString(String.Encoding.utf8, options: JSONSerialization.WritingOptions.prettyPrinted)!+"\n\n"
-            }
-            
-            appOpsWrapper.getDeployedContainers(edgeAccessToken: edgeAccessToken) { state in
-                
-                if state.error == nil {
-                    let containersJson = JSON.init(state.content ?? "")
-                    debugInfo += "getDeployedContainers:\n"
-                    debugInfo += containersJson.rawString(String.Encoding.utf8, options: JSONSerialization.WritingOptions.prettyPrinted)!+"\n\n"
-                }
-                
-                appOpsWrapper.getConfig({ state in
-                    
-                    if state.config != nil && state.error == nil {
-                        debugInfo += "getConfig:\n"
-                        debugInfo += state.config!.description+"\n\n"
-                    }
-
-                    appOpsWrapper.getInfo({ state in
-                        
-                        if state.info != nil && state.error == nil {
-                            debugInfo += "getInfo:\n"
-                            debugInfo += (state.info?.description)!+"\n\n"
-                            completion((debugInfo,nil))
-                        }
-                        else {
-                            completion((debugInfo,nil))
-                        }
-                    })
-                })
-            }
-        }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
     }
 }
 
-/**
- EdgeAppOpsProtocol. Getting calls about edgeSDK state changes.
- */
-extension ViewController: MMKEdgeAppOpsProtocol {
-    func edgeStatusChanged(status: MMKEdgeStatus) {
-        MMKLog.log(message: "edgeStatusChanged.", type: .info, value: "state: \(status.edgeState.rawValue) event: \(status.stateChangingEvent.rawValue)", subsystem: .edgeSDK_iOS_example)
-        DispatchQueue.main.async {
-            self.bottomInfoLabel.text = "state: \(status.edgeState.rawValue) event: \(status.stateChangingEvent.rawValue)"
-        }
+///**
+// EdgeAppOpsProtocol. Getting calls about edgeSDK state changes.
+// */
+extension ViewController: MIMIKEdgeMobileClientDelegate {
+    func edgeEngineStateChanged(event: MIMIKStateChangingEvent) {
+        MIMIKLog.log(message: "edgeEngineStateChanged to: ", type: .info, value: "event: \(event.rawValue)", subsystem: .mimik_example_app)
     }
 }

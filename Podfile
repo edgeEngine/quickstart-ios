@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '13.0'
 source 'https://github.com/CocoaPods/Specs.git'
 source 'https://github.com/mimikgit/cocoapod-edge-specs.git'
 
@@ -8,12 +8,8 @@ target 'example_microservice_app' do
   use_frameworks!
   
   # Pods for example_microservice_app
-  pod 'edgeSDK-iOS', '2.0.2'
-  pod 'edgeSDK-iOS-app-auth', '2.0.1'
-  pod 'edgeSDK-iOS-app-ops', '2.0.1'
-  pod 'Alamofire'
-  pod 'JWTDecode'
-  pod 'SwiftyJSON'
+  pod 'MIMIKEdgeMobileClient', '5.8'
+  pod 'RxSwift', '6.1.0'
 
   # ignore all warnings from all pods
   inhibit_all_warnings!
@@ -24,7 +20,7 @@ target 'example_microservice_app' do
               config.build_settings['ENABLE_BITCODE'] = 'YES'
               config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
               config.build_settings['VALID_ARCHS'] = '$(ARCHS_STANDARD_64_BIT)'
-              config.build_settings['SWIFT_VERSION'] = '5.0'
+              config.build_settings['SWIFT_VERSION'] = '5.3'
           end
       end
   end

@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-import edgeSDK_iOS
+import MIMIKEdgeMobileClient
 
 /**
  An object representing an edgeSDK node.
@@ -22,7 +22,7 @@ import edgeSDK_iOS
  * url: node external service link
  * thisDevice: convenience check whether this is the current node
  */
-class MMKEdgeNode: NSObject {
+class EdgeEngineNode: NSObject {
 
     var accountId: String?
     var name: String?
@@ -30,7 +30,6 @@ class MMKEdgeNode: NSObject {
     var os: String?
     var urlString: String?
     var url: URL?
-    var thisDevice: Bool = false
     
     convenience init?(json: JSON) {
         
@@ -61,45 +60,58 @@ class MMKEdgeNode: NSObject {
             self.urlString = url.stringValue
             self.url = URL.init(string: self.urlString!)
         }
-
-        if self.id == MMKAuthenticationManager.sharedInstance.edgeConfig?.nodeId {
-            self.thisDevice = true
-        }        
+    }
+    
+    func isThisDevice() -> Bool {
+        return self.name == UIDevice.current.name
     }
     
     func displayName() -> String {
         
-        guard let name = self.name else {
-            assertionFailure()
-            return ""
+        guard let checkedName = self.name else {
+            return "📱"
         }
         
-        return name + (self.thisDevice ? " (this device)" : "")
+        if self.isThisDevice() {
+            return "📲 " + checkedName
+        }
+        else {
+            return "📱 " + checkedName
+        }
+    }
+    
+    func displayServices() -> String {
+        let value: String = "id: \(self.id ?? "") \nplatform: \(self.os ?? "")" + "\nurl: \(self.urlString ?? "external network")"
+        return value
     }
     
     func getBEPURL(_ completion: @escaping ((url: URL?, error: Error?)) -> Void) {
         
-        guard let accessToken = MMKAuthenticationManager.sharedInstance.loadToken(type: .accessToken) else {
-                return
-        }
-        
-        guard let nodeId = self.id else {
-            assertionFailure()
+        guard let edgeAccessToken = MMKLibraryAdapter.currentEdgeAccessToken(), let checkedEdgeServiceLink = MMKLibraryAdapter.edgeServiceLink() else {
+            completion((nil, NSError.init(domain: "Unable to Proceed (token)", code: 500, userInfo: nil)))
             return
         }
         
-        let link = MMKConfigurationManager.exampleMicroServiceNodesLink() + nodeId
+        let microserviceBaseApiPath = MMKLibraryAdapter.microserviceDeployedBaseApiPath(type: .example, endpoint: .nodes)
+        let link = checkedEdgeServiceLink + "/" + microserviceBaseApiPath
+
+        guard let nodeId = self.id else {
+            completion((nil, NSError.init(domain: "Unable to Proceed (nodeId)", code: 500, userInfo: nil)))
+            return
+        }
         
-        let authenticatedLink = link + "?userAccessToken=\(accessToken)"
-        let headers = ["Authorization" : "Bearer \(accessToken)" ]
+        let fullLink = link + "/" + nodeId
+        let authenticatedLink = fullLink + "?userAccessToken=\(edgeAccessToken)"
+        let headers = ["Authorization" : "Bearer \(edgeAccessToken)" ]
+        let httpHeaders = HTTPHeaders.init(headers)
         
-        Alamofire.request(authenticatedLink, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers).responseJSON { response in
+        AF.request(authenticatedLink, method: .get, parameters: nil, encoding: URLEncoding.default, headers: httpHeaders).responseJSON { response in
             switch response.result {
             case .success(let data):
                 let json = JSON.init(data)
                 if json != JSON.null {
                     
-                    MMKLog.log(message: "getBEPURL id: ", type: .info, value: " \(nodeId) response_json: \(json)", subsystem: .edgeSDK_iOS_example)
+                    MIMIKLog.log(message: "getBEPURL id: ", type: .info, value: " \(nodeId) response_json: \(json)", subsystem: .mimik_example_app)
                     
                     let code = json["code"]
                     if code != JSON.null {
@@ -112,7 +124,7 @@ class MMKEdgeNode: NSObject {
                     
                     let urlString = json["url"]
                     guard !urlString.stringValue.isEmpty else {
-                        completion((nil, NSError.init(domain: "Unable to process the response", code: 500, userInfo: nil)))
+                        completion((nil, NSError.init(domain: "Unable to Proceed", code: 500, userInfo: nil)))
                         return
                     }
                     

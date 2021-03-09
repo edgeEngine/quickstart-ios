@@ -1,51 +1,45 @@
 PODS:
-  - Alamofire (4.8.2)
-  - AppAuth (0.95.1)
-  - edgeSDK-iOS (2.0.2)
-  - edgeSDK-iOS-app-auth (2.0.1):
-    - AppAuth
-    - edgeSDK-iOS (~> 2.0.1)
-    - Starscream
-    - SwiftyJSON
-  - edgeSDK-iOS-app-ops (2.0.1):
-    - Alamofire
-    - edgeSDK-iOS (~> 2.0.1)
-    - Starscream
-    - SwiftyJSON
-  - JWTDecode (2.2.0)
-  - Starscream (3.1.0)
+  - Alamofire (5.4.1)
+  - AppAuth (1.4.0):
+    - AppAuth/Core (= 1.4.0)
+    - AppAuth/ExternalUserAgent (= 1.4.0)
+  - AppAuth/Core (1.4.0)
+  - AppAuth/ExternalUserAgent (1.4.0)
+  - JWTDecode (2.6.0)
+  - KeychainSwift (19.0.0)
+  - MIMIKEdgeMobileClient (5.8):
+    - Alamofire (~> 5.4.1)
+    - AppAuth (~> 1.4.0)
+    - JWTDecode (~> 2.6.0)
+    - KeychainSwift (~> 19.0.0)
+    - SwiftyJSON (~> 5.0.0)
+  - RxSwift (6.1.0)
   - SwiftyJSON (5.0.0)
 
 DEPENDENCIES:
-  - Alamofire
-  - edgeSDK-iOS (= 2.0.2)
-  - edgeSDK-iOS-app-auth (= 2.0.1)
-  - edgeSDK-iOS-app-ops (= 2.0.1)
-  - JWTDecode
-  - SwiftyJSON
+  - MIMIKEdgeMobileClient (= 5.8)
+  - RxSwift (= 6.1.0)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Alamofire
     - AppAuth
     - JWTDecode
-    - Starscream
+    - KeychainSwift
+    - RxSwift
     - SwiftyJSON
   https://github.com/mimikgit/cocoapod-edge-specs.git:
-    - edgeSDK-iOS
-    - edgeSDK-iOS-app-auth
-    - edgeSDK-iOS-app-ops
+    - MIMIKEdgeMobileClient
 
 SPEC CHECKSUMS:
-  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
-  AppAuth: cd34aac431e5c77c46ec7f03935377faa8c5808b
-  edgeSDK-iOS: 55029ddd70e1beff9029876d39969d4a8bf3e374
-  edgeSDK-iOS-app-auth: 4fea6388bcead2695b22ca6e9e8861bd37921340
-  edgeSDK-iOS-app-ops: aa4dab7b50cfcd8a90945c50f308385ccb615818
-  JWTDecode: 85a405ab16d5473e99bd89ded1d535090ebd6a0e
-  Starscream: 08172b481e145289c4930cb567230fb55897cfa4
+  Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
+  AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
+  JWTDecode: 480ca441ddbd5fbfb2abf17870af62f86436be58
+  KeychainSwift: a06190cf933ad46b1e0abc3d77d29c06331715c7
+  MIMIKEdgeMobileClient: 72b3b542f180236e4dbcedbc7e762c22c37ba481
+  RxSwift: a834e5c538e89eca0cae86f403f4fbf0336786ce
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
 
-PODFILE CHECKSUM: fe14329c33eadaecac6b6656440b17eb60a8caad
+PODFILE CHECKSUM: 9df4ceee42c404548ae57e04a5f680c5de7ebe22
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.10.1
