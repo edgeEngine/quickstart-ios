@@ -82,4 +82,4 @@ After  the following message flow is used to retrieve account cluster nodes:
 
 ## Recommended guides
 
-- [mimik serverless JavaScript programming API](https://developers.mimik360.com/docs/1.2.0/resources/how-to-use-mimik-serverless-javascript-programming-api.html)
+- [mimik serverless JavaScript programming API](https://developer.mimik.com/edgeengine-serverless-apis/)
