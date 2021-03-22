@@ -1,20 +1,22 @@
+README Updated: 03/22/2021
+
 ## Objectives
 
-Use the example application for iOS devices to understand how interactions between application, microservice, and edgeSDK work.
+Use the example application to get a feel for how the interactions between the application, mimik client library, mimik client library adapter, example microservice, and mimik edgeEngine work.
 
-## Installation
+## Project setup start
 
-On your computer use the command line to clone the edgeSDK project from GitHub somewhere accessible on your user home directory. This guide starts from the Downloads folder
+On your Mac use the terminal to clone the iOS quickstart example project from GitHub to somewhere in your user home directory. This guide works with the ~/Desktop folder.
 
-```cd ~/Downloads```
+```cd ~/Desktop```
 
-```git clone https://github.com/mimikgit/edgeSDK.git```
+```git clone https://github.com/edgeEngine/quickstart-ios```
 
-Navigate to the example iOS directory
+Navigate to the project directory
 
-```cd /examples/iOS\ Hello\ App/```
+```cd quickstart-ios```
 
-Check your cocoapod version to make sure you're good to go with a compatible version (1.5.3+)
+Check your cocoapod version to make sure you're good to go with a compatible version (**1.10.1**+)
 
 ```pod --version```
 
@@ -22,64 +24,45 @@ Install the required cocoapods
 
 ```pod install```
 
-You might also want to check for any outdated pods to make sure you're using the latest versions
+**You will need to finish the mimik developer account registration and developer id token steps below and come back here before being able to fully experience this example project.**
 
-```pod outdated```
+## mimik developer account registration
+Create a mimik developer account and/or sign in to the mimik developer console at
+```https://developer.mimik.com/console```
 
-and then update if relevant updates are available
+## mimik developer id token and client id
+Create a new example project while signed in to the mimik developer console.
+```➕ Create New Project ```
 
-```pod update```
+Get the developer id token and client id of the new example project.
+```🗝 Get ID Token ```
 
-Start Xcode 10.1+ and open example_microservice_app.xcworkspace. **Note** You must use a **real device**, not an emulator to build the example application. edgeSDK functionality will not work on emulated devices.
 
-## Using the app
+# Continue project setup
+
+Start **Xcode 12.4**+ and open the example-dev-id-token.xcworkspace. **Note** You must use a **real device**, not a simulator to build the example application. edgeEngine will not work on simulated devices.
+
+Copy the developer id token and client id values and paste them into the Developer.swift file in the example-dev-id-token Xcode project that you cloned to the ~/Desktop/quickstart-ios folder.
+
+Sign into your Apple developer account in Xcode and adjust the Bundle identifier and Signing settings for the example-dev-id-token that fit your Apple developer profile under the example-dev-id-token target.
+
+
+
+## Using the example application
 
 Once the application is running on your test device there are a few functions you can test.
 
-First press the StartEdge button to start the edgeSDK service
+First press the Startup button to start. The following actions will happen in succession:
 
-After about five seconds press the Authorize button and allow the example application to use the authorization webpage by selecting Continue on the iOS popup dialogue
+1. edgeEngine will be started, via the mimik client library
+2. edgeEngine will be authorized using your mimik developer id token, via the mimik client library
+3. an example microservice will be deployed to edgeEngine, via the mimik client library
 
-Then login using your Developer Account credentials and select Allow to exit the authorization webpage
+Once the example microservice is deployed you can try using the microservice features:
 
-Tap Associate to link your developer account to this edgeSDK runtime
+1. Press Network to search for devices on your local network **(There is currently a known issue with iOS 14+ devices where the local network discovery feature might not work properly. Use the Nearby feature instead.)**
+2. Press Nearby to search across all networks for devices deemed to be within a proximity distance of your device
 
-Press load Deploy button to deploy the [example microservice](https://developers.mimik360.com/docs/1.2.0/microservices/how-to-deploy-example-microservice.html) on this device
+It works best if you have at least two other devices running the same example application. One on the same network and another on a different network.
 
-Once deployed you can scan for devices running edgeSDK with the example micro service deployed in two different ways:
-
-1. Press GetNetwork to search for devices on your local network
-2. Press GetNearby to search across all networks for devices deemed to be within a proximity distance of your device
-
-It works best if you have at least two other devices running the same example app on the same and different network.
-
-Tap any of the discovered devices to see a Hello WORLD!!! response at the bottom of your screen. Sometimes you have to wait a bit for connection tunnels to be established.
-
-## Summary
-
-Below is the message sequence between example app, microservice and edgeSDK:
-
-![app registration](https://developers.mimik360.com/assets/images/documentation/Hello App registration.png)
-
-1. First the example app associates edgeSDK with accountID
-1. Developer registers its sample app to mimik developer portal and receives the account information and account key
-1. In the sample app, it uses registered account key to associate sample app with edgeSDK 
-1. App verifies that edgeSDK associated with the correct account info.
-
-After  the following message flow is used to retrieve account cluster nodes:
-
-![account cluster](https://developers.mimik360.com/assets/images/documentation/example microservice account cluster.png)
-
-1. Sample app first calls account service from example microservice to retrieve account cluster nodes from the BES using the authorization key of associated account
-1. mPO requests the nodes information  including BEP references of account cluster nodes.
-1. mDS gets the account key and returns cluster nodes information.
-1. mPO returns nodes and profile information of cluster account
-1. example microservices also calls nearby service from edgeSDK to get linked local nodes,
-1. if available, example microservice uses the local addresses of account cluster nodes to communicate with them
-1. example microservice return account cluster nodes ( BEP or local address)  and then sample example displays info on the app screen.
-1. User selects one of the nodes and then sample app calls hello method with select node's' url to get a message from this node.
-1. Show the hello world response
-
-## Recommended guides
-
-- [mimik serverless JavaScript programming API](https://developer.mimik.com/edgeengine-serverless-apis/)
+Tap any of the discovered devices to see a Hello WORLD!!! response. Sometimes you have to wait a bit for the connection tunnels to be established between different networks.

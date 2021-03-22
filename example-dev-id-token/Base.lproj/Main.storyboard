@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="iLd-7Q-QDR">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="Ex6-yA-L0q">
+            <objects>
+                <viewController storyboardIdentifier="ViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="iLd-7Q-QDR" customClass="ViewController" customModule="example_dev_id_token" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="RGt-EY-g28">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="wDJ-IA-nuS">
+                                <rect key="frame" x="20" y="54" width="374" height="518.5"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="c8i-Qr-Fb4">
+                                        <rect key="frame" x="44" y="0.0" width="286.5" height="80.5"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mimik-logo-web-small" translatesAutoresizingMaskIntoConstraints="NO" id="Xuo-8U-DXi">
+                                                <rect key="frame" x="92" y="0.0" width="102" height="45"/>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="example application with developer id token authentication v2.0" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elf-fF-tb0">
+                                                <rect key="frame" x="0.0" y="45" width="286.5" height="35.5"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Mam-ha-aWf">
+                                        <rect key="frame" x="125" y="95.5" width="124" height="61"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="61" id="Ja9-ja-jqb"/>
+                                        </constraints>
+                                        <string key="text">start edgeEngine
+start edgeEngine
+start edgeEngine</string>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="bdt-O9-76n">
+                                        <rect key="frame" x="9.5" y="171.5" width="355" height="81"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1. Start edgeEngine, authorize with developer id token, deploy microservice in one step" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DsU-Qn-4xh">
+                                                <rect key="frame" x="0.0" y="0.0" width="355" height="40.5"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sku-mF-Zwx">
+                                                <rect key="frame" x="0.0" y="40.5" width="355" height="40.5"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                <state key="normal" title="Startup"/>
+                                                <connections>
+                                                    <action selector="authorizationAction:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="dpI-MI-zYf"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="2dm-ub-ZwT">
+                                        <rect key="frame" x="44" y="267.5" width="286.5" height="70"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2. Start making network discovery calls" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uZW-nT-EgM">
+                                                <rect key="frame" x="0.0" y="0.0" width="286.5" height="35"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="L4v-ER-ZWD">
+                                                <rect key="frame" x="0.0" y="35" width="286.5" height="35"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J2b-eC-rFg">
+                                                        <rect key="frame" x="0.0" y="0.0" width="143" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="Network"/>
+                                                        <connections>
+                                                            <action selector="getNodesNetwork" destination="iLd-7Q-QDR" eventType="touchUpInside" id="tF5-xz-kis"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UNf-Mp-se0">
+                                                        <rect key="frame" x="143" y="0.0" width="143.5" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="Nearby"/>
+                                                        <connections>
+                                                            <action selector="getNodesNearbyAction" destination="iLd-7Q-QDR" eventType="touchUpInside" id="dz4-KM-i2P"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="noI-TS-5bD">
+                                        <rect key="frame" x="13" y="352.5" width="348.5" height="81"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3. Shutdown edgeEngine, unauthorize, remove microservice when done" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="chm-nk-26L">
+                                                <rect key="frame" x="0.0" y="0.0" width="348.5" height="40.5"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="20W-8o-4Q9" userLabel="Unauthorize">
+                                                <rect key="frame" x="0.0" y="40.5" width="348.5" height="40.5"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                <state key="normal" title="Shutdown"/>
+                                                <connections>
+                                                    <action selector="unauthorizeAction:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="OEj-ov-UAi"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="Alx-8x-iww">
+                                        <rect key="frame" x="47.5" y="448.5" width="279" height="70"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="For additional debugging" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mmm-zf-hAu">
+                                                <rect key="frame" x="0.0" y="0.0" width="279" height="35"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="8ql-gA-lyA">
+                                                <rect key="frame" x="0.0" y="35" width="279" height="35"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ek2-3A-azT" userLabel="Start">
+                                                        <rect key="frame" x="0.0" y="0.0" width="40" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="Start"/>
+                                                        <connections>
+                                                            <action selector="startEdgeEngine:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="kBY-Uz-muz"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vPe-oL-7fe" userLabel="Stop">
+                                                        <rect key="frame" x="60" y="0.0" width="40" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="Stop"/>
+                                                        <connections>
+                                                            <action selector="stopEdgeEngine:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="j1s-KJ-nZ3"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qy7-A5-95g" userLabel="Get Edge Info">
+                                                        <rect key="frame" x="120" y="0.0" width="30" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="Info"/>
+                                                        <connections>
+                                                            <action selector="getEdgeInfo:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="ddV-kI-hJm"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Fv-9e-usj" userLabel="Get Edge Id Token">
+                                                        <rect key="frame" x="170" y="0.0" width="59" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="Identity"/>
+                                                        <connections>
+                                                            <action selector="getEdgeIdToken:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="GBr-Nw-l5r"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mtt-fg-CPp">
+                                                        <rect key="frame" x="249" y="0.0" width="30" height="35"/>
+                                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                                        <state key="normal" title="List"/>
+                                                        <connections>
+                                                            <action selector="listButtonPressed:" destination="iLd-7Q-QDR" eventType="touchUpInside" id="Za0-PJ-vx7"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="150" estimatedRowHeight="150" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="75M-IX-DxX">
+                                <rect key="frame" x="20" y="592.5" width="374" height="259.5"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="NodeCell" textLabel="OJv-QP-TGB" detailTextLabel="iQU-9x-gDX" rowHeight="150" style="IBUITableViewCellStyleSubtitle" id="0ah-sO-Trg">
+                                        <rect key="frame" x="0.0" y="28" width="374" height="150"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0ah-sO-Trg" id="6j6-yV-29U">
+                                            <rect key="frame" x="0.0" y="0.0" width="374" height="150"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OJv-QP-TGB">
+                                                    <rect key="frame" x="20" y="52" width="35.5" height="21.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iQU-9x-gDX">
+                                                    <rect key="frame" x="20" y="76.5" width="52" height="19"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="16"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="iLd-7Q-QDR" id="wOK-9T-JQT"/>
+                                    <outlet property="delegate" destination="iLd-7Q-QDR" id="EdB-oc-0wm"/>
+                                </connections>
+                            </tableView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="v0l-Z7-hfL">
+                                <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
+                                <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="cm8-zF-K0T"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="v0l-Z7-hfL" firstAttribute="centerY" secondItem="cm8-zF-K0T" secondAttribute="centerY" id="7pp-gZ-aWh"/>
+                            <constraint firstItem="wDJ-IA-nuS" firstAttribute="leading" secondItem="cm8-zF-K0T" secondAttribute="leading" constant="20" id="OrF-kF-Hd5"/>
+                            <constraint firstItem="cm8-zF-K0T" firstAttribute="trailing" secondItem="wDJ-IA-nuS" secondAttribute="trailing" constant="20" id="Qbc-oX-wdp"/>
+                            <constraint firstItem="wDJ-IA-nuS" firstAttribute="top" secondItem="cm8-zF-K0T" secondAttribute="top" constant="10" id="XbX-Ar-Cts"/>
+                            <constraint firstItem="75M-IX-DxX" firstAttribute="leading" secondItem="cm8-zF-K0T" secondAttribute="leading" constant="20" id="ZZr-c3-CLy"/>
+                            <constraint firstItem="75M-IX-DxX" firstAttribute="top" secondItem="wDJ-IA-nuS" secondAttribute="bottom" constant="20" id="et4-Qd-tkc"/>
+                            <constraint firstItem="v0l-Z7-hfL" firstAttribute="centerX" secondItem="cm8-zF-K0T" secondAttribute="centerX" id="ogS-rl-0Dy"/>
+                            <constraint firstItem="cm8-zF-K0T" firstAttribute="bottom" secondItem="75M-IX-DxX" secondAttribute="bottom" constant="10" id="slC-Xu-LOt"/>
+                            <constraint firstItem="cm8-zF-K0T" firstAttribute="trailing" secondItem="75M-IX-DxX" secondAttribute="trailing" constant="20" id="y3q-U5-uVb"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="activitySpinner" destination="v0l-Z7-hfL" id="IqA-De-Yij"/>
+                        <outlet property="authorizeButton" destination="sku-mF-Zwx" id="Owy-85-PFu"/>
+                        <outlet property="bottomInfoLabel" destination="Mam-ha-aWf" id="JaI-Zw-K9A"/>
+                        <outlet property="edgeIdButton" destination="8Fv-9e-usj" id="6DW-DW-xhv"/>
+                        <outlet property="edgeInfoButton" destination="Qy7-A5-95g" id="hqs-UZ-o2n"/>
+                        <outlet property="listButton" destination="mtt-fg-CPp" id="7FX-Qa-Hsq"/>
+                        <outlet property="listNearbyButton" destination="UNf-Mp-se0" id="2yX-xQ-fwq"/>
+                        <outlet property="listNetworkButton" destination="J2b-eC-rFg" id="ZdJ-12-ci2"/>
+                        <outlet property="startButton" destination="Ek2-3A-azT" id="NFx-wv-fCw"/>
+                        <outlet property="stopButton" destination="vPe-oL-7fe" id="Qbk-Rl-muY"/>
+                        <outlet property="tableView" destination="75M-IX-DxX" id="XJu-dB-x5U"/>
+                        <outlet property="unauthorizeButton" destination="20W-8o-4Q9" id="ph5-5q-eBO"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cF1-l8-auC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="870" y="130"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="mimik-logo-web-small" width="102" height="45"/>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

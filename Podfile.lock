@@ -7,7 +7,7 @@ PODS:
   - AppAuth/ExternalUserAgent (1.4.0)
   - JWTDecode (2.6.0)
   - KeychainSwift (19.0.0)
-  - MIMIKEdgeMobileClient (5.8):
+  - MIMIKEdgeMobileClient (6.2.1):
     - Alamofire (~> 5.4.1)
     - AppAuth (~> 1.4.0)
     - JWTDecode (~> 2.6.0)
@@ -17,7 +17,7 @@ PODS:
   - SwiftyJSON (5.0.0)
 
 DEPENDENCIES:
-  - MIMIKEdgeMobileClient (= 5.8)
+  - MIMIKEdgeMobileClient (= 6.2.1)
   - RxSwift (= 6.1.0)
 
 SPEC REPOS:
@@ -36,10 +36,10 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   JWTDecode: 480ca441ddbd5fbfb2abf17870af62f86436be58
   KeychainSwift: a06190cf933ad46b1e0abc3d77d29c06331715c7
-  MIMIKEdgeMobileClient: 72b3b542f180236e4dbcedbc7e762c22c37ba481
+  MIMIKEdgeMobileClient: 434a78dc6dfa3fb5b913488785d3ba13ee644cc1
   RxSwift: a834e5c538e89eca0cae86f403f4fbf0336786ce
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
 
-PODFILE CHECKSUM: 9df4ceee42c404548ae57e04a5f680c5de7ebe22
+PODFILE CHECKSUM: 31095520a31b8e476332aaa7c1535711877fb838
 
 COCOAPODS: 1.10.1
